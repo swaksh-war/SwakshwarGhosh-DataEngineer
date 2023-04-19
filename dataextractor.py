@@ -2,7 +2,8 @@ import os
 from zipfile import ZipFile
 import xml.etree.ElementTree as et
 import pandas as pd
-
+import boto3
+from zipdownloader import download_docs
 
 class DataExtractor:
     '''
@@ -103,10 +104,26 @@ class DataExtractor:
     def upload_to_s3(self, aws_access_key : str, aws_secret_access_key : str, bucket_name : str) -> None:
         '''
         This Function will upload the files accessing from the csv_file_names list in the class and upload it to the s3 bucket.
+        parameters -> aws_access_key - Your AWS access key.
+        aws_secret_access_key - Your AWS Secret access key.
+        bucket_name - Your Buncket name.
         '''
-        pass
+        access_key = aws_access_key
+        secret_access_key = aws_secret_access_key
+        s3_bucket_name = bucket_name
+
+        s3 = boto3.client(
+            "s3",
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_access_key
+            )
+        for file in self.csv_file_names:
+            s3.upload_file(file, s3_bucket_name, file)
+        print(f"All file uploaded to {bucket_name} successfully")
 if __name__ == '__main__':
+    download_docs('downloadedxml.xml')
     de = DataExtractor()
     de.extract_zip('supporting_files')
     de.extract_from_xml()
+    de.upload_to_s3('your aws access key','your aws secret access key','your bucket name')
 

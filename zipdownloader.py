@@ -4,6 +4,11 @@ import os
 
 
 def download_docs(filename : str) -> None:
+    '''
+    this function takes a xml file as an input and gets the download link from the xml and downloads.
+    later on it saves the content in a folder names as supporting files.
+    parameters:- filename - xml file name.
+    '''
     tree = et.parse(filename)
 
     document =tree.getroot()
