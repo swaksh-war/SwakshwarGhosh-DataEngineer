@@ -1,5 +1,4 @@
-# SwakshwarGhosh-DataEngineer
-Steel-Eye assginment
+# Steel-EYE assignment
 <strong>As a part of SteelEYE DataEngineer assessment this is built</strong>
 <ul>
 <li>zipdownloader.py -> this file/module contains a method that can take an xml file containing download-link under result tag as input</li>
