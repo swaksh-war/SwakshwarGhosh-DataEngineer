@@ -6,7 +6,7 @@
 </ul>
 <strong>In further update the zipdownloader module methods have been merged in the DataExtractor to directly access initial xml file and access all the other in 1 single command</strong>
 
-example code:
+<p>example code:</p>
 <code>
 python dataextractor.py downloadedxml.xml
 </code>
