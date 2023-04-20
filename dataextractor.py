@@ -4,7 +4,7 @@ import xml.etree.ElementTree as et
 import pandas as pd
 import boto3
 from zipdownloader import download_docs
-
+import sys
 class DataExtractor:
     '''
     This Class uses two methods:-
@@ -16,6 +16,40 @@ class DataExtractor:
     def __init__(self):
         self.xml_file_names = []
         self.csv_file_names = []
+    
+    def download_docs(self, filename : str) -> None:
+        '''
+        this function takes a xml file as an input and gets the download link from the xml and downloads.
+        later on it saves the content in a folder names as supporting files.
+        parameters:- filename - xml file name.
+        '''
+        tree = et.parse(filename)
+
+        document =tree.getroot()
+        doc_tags = document.find('result')
+        num = 1
+        for doc in doc_tags:
+            
+            download_link_tag = doc.find('str[@name="download_link"]')
+            download_link = download_link_tag.text
+            
+            suffix = "st" if num == 1 else "nd" if num == 2 else "rd" if num == 3 else "th"
+            
+            print(f'Starting downloading {num}{suffix} download link')
+            
+            r = requests.get(download_link, allow_redirects=True)
+            downloaded_file_name = download_link.split('/')[-1]
+            
+            if not os.path.exists('supporting_files'):
+                os.mkdir('supporting_files')
+
+            with open (f'supporting_files\{downloaded_file_name}', 'wb') as f:
+                f.write(r.content)
+            
+            print(f'Finishing downloading and writing {num}{suffix} download link')
+
+            num += 1
+        print('Finished Parsing and Writing the data')
 
     def extract_zip(self, containing_folder_or_file : str) -> None:
         '''
@@ -121,8 +155,9 @@ class DataExtractor:
             s3.upload_file(file, s3_bucket_name, file)
         print(f"All file uploaded to {bucket_name} successfully")
 if __name__ == '__main__':
-    download_docs('downloadedxml.xml')
+    xml_file_path = sys.argv[1]
     de = DataExtractor()
+    de.download_docs(xml_file_path)
     de.extract_zip('supporting_files')
     de.extract_from_xml()
     de.upload_to_s3('your aws access key','your aws secret access key','your bucket name')
